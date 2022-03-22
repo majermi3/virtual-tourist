@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  VirtualTourist
 //
-//  Created by Gökce Hatipoglu Majernik on 3/22/22.
+//  Created by Michal Majernik on 3/22/22.
 //
 
 import UIKit
