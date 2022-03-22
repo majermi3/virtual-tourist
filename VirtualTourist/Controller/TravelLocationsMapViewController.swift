@@ -7,6 +7,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
 
@@ -21,15 +22,28 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     let regionSpanLongitudeDelta = "region.span.longitudeDelta"
     let regionSpanLatitudeDelta = "region.span.latitudeDelta"
     
+    var pins: [Pin] = []
+    
     // MARK: Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        addLongPressGestureToMap()
         restoreRegion()
+        loadPins()
     }
     
     // MARK: Custom functions
+    
+    fileprivate func loadPins() {
+        let fetchRequest:NSFetchRequest<Pin> = Pin.fetchRequest()
+        
+        if let result = try? DataController.shared.viewContext.fetch(fetchRequest) {
+            pins = result
+            addPins()
+        }
+    }
     
     func persistRegion(_ region: MKCoordinateRegion) {
         UserDefaults.standard.set(region.center.longitude, forKey: regionCenterLongitude)
@@ -53,6 +67,41 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             span: MKCoordinateSpan(latitudeDelta: regionSpanLatitude, longitudeDelta: regionSpanLongitude)
         )
         mapView.setRegion(mapView.regionThatFits(region), animated: true)
+    }
+    
+    fileprivate func addLongPressGestureToMap() {
+        let longPressed = UILongPressGestureRecognizer(target: self, action: #selector(addPin(gesture:)))
+        mapView.addGestureRecognizer(longPressed)
+    }
+    
+    fileprivate func persistPin(coordinates: CLLocationCoordinate2D) {
+        let pin = Pin(context: DataController.shared.viewContext)
+        pin.latitude = coordinates.latitude
+        pin.longitude = coordinates.longitude
+        
+        try? DataController.shared.viewContext.save()
+    }
+    
+    fileprivate func addPinAnnotation(_ coordinates: CLLocationCoordinate2D) {
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = coordinates
+        mapView.addAnnotation(annotation)
+    }
+    
+    fileprivate func addPins() {
+        for pin in pins {
+            addPinAnnotation(CLLocationCoordinate2DMake(pin.latitude, pin.longitude))
+        }
+    }
+    
+    @objc func addPin(gesture: UILongPressGestureRecognizer) {
+        let touchPoint = gesture.location(in: gesture.view)
+        let coordinates = (gesture.view as? MKMapView)?.convert(touchPoint, toCoordinateFrom: gesture.view)
+        
+        if let coordinates = coordinates {
+            addPinAnnotation(coordinates)
+            persistPin(coordinates: coordinates)
+        }
     }
     
     // MARK: Map delegates

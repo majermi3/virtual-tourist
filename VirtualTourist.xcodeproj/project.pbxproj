@@ -14,6 +14,7 @@
 		73B9D75A27EA258400FC82AD /* VirtualTourist.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 73B9D75827EA258400FC82AD /* VirtualTourist.xcdatamodeld */; };
 		73B9D75C27EA258600FC82AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 73B9D75B27EA258600FC82AD /* Assets.xcassets */; };
 		73B9D75F27EA258600FC82AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 73B9D75D27EA258600FC82AD /* LaunchScreen.storyboard */; };
+		73B9D76B27EA74FB00FC82AD /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B9D76A27EA74FB00FC82AD /* DataController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		73B9D75B27EA258600FC82AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		73B9D75E27EA258600FC82AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		73B9D76027EA258600FC82AD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		73B9D76A27EA74FB00FC82AD /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				73B9D75827EA258400FC82AD /* VirtualTourist.xcdatamodeld */,
+				73B9D76A27EA74FB00FC82AD /* DataController.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -173,6 +176,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				73B9D76B27EA74FB00FC82AD /* DataController.swift in Sources */,
 				73B9D75A27EA258400FC82AD /* VirtualTourist.xcdatamodeld in Sources */,
 				73B9D75427EA258400FC82AD /* TravelLocationsMapViewController.swift in Sources */,
 				73B9D75027EA258400FC82AD /* AppDelegate.swift in Sources */,
