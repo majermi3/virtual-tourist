@@ -104,7 +104,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
         photoAlbumVC.pin = pin
         
-        self.present(photoAlbumVC, animated: true, completion: nil)
+        self.navigationController?.pushViewController(photoAlbumVC, animated: true)
     }
     
     // MARK: Map delegates
@@ -118,4 +118,5 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             goToPhotoAlbum(pin: pin as! Pin)
         }
     }
+    
 }

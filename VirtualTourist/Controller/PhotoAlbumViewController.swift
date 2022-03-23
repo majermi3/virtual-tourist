@@ -49,6 +49,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             longitudinalMeters: CLLocationDistance(exactly: 5000)!
         )
         mapView.setRegion(mapView.regionThatFits(region), animated: true)
+        mapView.addAnnotation(pin)
     }
     
     // MARK: Custom functions

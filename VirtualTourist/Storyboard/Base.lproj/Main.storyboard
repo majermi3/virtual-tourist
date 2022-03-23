@@ -33,7 +33,9 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="cD4-yC-vqd" secondAttribute="bottom" id="x6z-As-xWv"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="rmr-uO-1dk"/>
+                    <navigationItem key="navigationItem" id="rmr-uO-1dk">
+                        <barButtonItem key="backBarButtonItem" title="OK" id="eu3-YX-xMh"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="mapView" destination="cD4-yC-vqd" id="ew3-Rc-Jl8"/>
                         <segue destination="3oN-Up-FcC" kind="show" identifier="showPhotoAlbum" id="drK-dY-ACu"/>
@@ -109,12 +111,7 @@
                             <constraint firstItem="GCN-VH-YHS" firstAttribute="leading" secondItem="zGg-s1-Gpl" secondAttribute="leading" id="ynb-cH-QlM"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="fhv-LT-cwq">
-                        <barButtonItem key="leftBarButtonItem" title="OK" id="Yye-0I-oPv"/>
-                        <connections>
-                            <outlet property="backBarButtonItem" destination="Yye-0I-oPv" id="8a0-oi-mA9"/>
-                        </connections>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="fhv-LT-cwq"/>
                     <connections>
                         <outlet property="mapView" destination="zQi-Gs-EzL" id="w95-Eg-Knr"/>
                         <outlet property="photoAlbum" destination="GCN-VH-YHS" id="7xY-V3-FSz"/>
