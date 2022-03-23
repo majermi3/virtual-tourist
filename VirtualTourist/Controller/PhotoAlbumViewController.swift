@@ -102,6 +102,17 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         }
     }
     
+    // MARK: Actions
+    
+    @IBAction func loadNewCollection(_ sender: Any) {
+        let photos = fetchedResultsController.sections?.first?.objects as! [Photo]
+        
+        for photo in photos {
+            DataController.shared.viewContext.delete(photo)
+        }
+        loadFlickrPhotos()
+    }
+    
     // MARK: Collection delegates
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
