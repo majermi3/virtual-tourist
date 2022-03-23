@@ -61,7 +61,7 @@ class FlickrClient {
         task.resume()
     }
     
-    class func loadPhoto(photo: Photo, completion: @escaping (UIImage?, Error?) -> Void) {
+    class func loadPhoto(photo: Photo, completion: @escaping (Data?, Error?) -> Void) {
         guard photo.server != nil, photo.id != nil, photo.secret != nil else {
             //TODO Error message
             return
@@ -70,37 +70,40 @@ class FlickrClient {
         let url = Endpoints.photo(photo: photo).url
         
         // Load image from cache
-        let imageCache = ImageCache.getImageCache()
-        if let cacheImage = imageCache.get(forKey: url.absoluteString) {
-            print("Loading image from cache: \(url.absoluteString)")
-            completion(cacheImage, nil)
+        let fileCachePath = FileManager.default.temporaryDirectory.appendingPathComponent(
+            url.lastPathComponent,
+            isDirectory: false
+        )
+        if let data = try? Data(contentsOf: fileCachePath) {
+            completion(data, nil)
             return
         }
         
-        
-        let request = URLRequest(url: url)
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            print("Loading image from Flickr: \(url.absoluteString)")
-            if error != nil || data == nil {
+        let task = URLSession.shared.downloadTask(with: url) { tempURL, response, error in
+            guard error == nil, tempURL != nil else {
                 DispatchQueue.main.async {
                     completion(nil, error)
                 }
                 return
             }
             
-            DispatchQueue.main.async {
-                guard let loadedPhoto = UIImage(data: data!) else {
-                    DispatchQueue.main.async {
-                        completion(nil, error)
-                    }
-                    return
+            cachePhoto(tempPath: tempURL!, path: fileCachePath)
+            
+            if let data = try? Data(contentsOf: fileCachePath) {
+                DispatchQueue.main.async {
+                    completion(data, nil)
                 }
-                imageCache.set(forKey: url.absoluteString, image: loadedPhoto)
-                completion(loadedPhoto, nil)
             }
         }
         task.resume()
+    }
+    
+    private class func cachePhoto(tempPath: URL, path: URL) {
+        if FileManager.default.fileExists(atPath: path.path) {
+            try? FileManager.default.removeItem(at: path)
+        }
         
+        try? FileManager.default.copyItem(at: tempPath, to: path)
     }
     
     private class func setRandomPage(total: Int) {

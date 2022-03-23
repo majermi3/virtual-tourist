@@ -63,7 +63,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             fetchRequest: fetchRequest,
             managedObjectContext: DataController.shared.viewContext,
             sectionNameKeyPath: nil,
-            cacheName: "\(pin.uuid)-photos"
+            cacheName: "\(pin.uuid!)-photos"
         )
         fetchedResultsController.delegate = self
         do {
@@ -115,24 +115,18 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         
         let currentPhoto = fetchedResultsController.object(at: indexPath)
         
-        FlickrClient.loadPhoto(photo: currentPhoto) { image, error in
-            if error != nil {
+        FlickrClient.loadPhoto(photo: currentPhoto) { data, error in
+            if error != nil || data == nil {
                 // TODO Show error message
             } else {
-                cell.photoView.image = image
+                cell.photoView.image = UIImage(data: data!)
             }
         }
         
         return cell
     }
     
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        let count = fetchedResultsController.sections?[0].numberOfObjects
-        print("will change: \(count)")
-    }
-    
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        let count = fetchedResultsController.sections?[0].numberOfObjects
-        print("did change: \(count)")
+        photoAlbum.reloadData()
     }
 }
