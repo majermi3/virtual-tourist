@@ -65,7 +65,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             fetchRequest: fetchRequest,
             managedObjectContext: DataController.shared.viewContext,
             sectionNameKeyPath: nil,
-            cacheName: "\(pin.uuid!)-photos"
+            cacheName: nil
         )
         fetchedResultsController.delegate = self
         do {
@@ -152,6 +152,12 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         }
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let photoToDelete = fetchedResultsController.object(at: indexPath)
+        DataController.shared.viewContext.delete(photoToDelete)
+        try? DataController.shared.viewContext.save()
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
