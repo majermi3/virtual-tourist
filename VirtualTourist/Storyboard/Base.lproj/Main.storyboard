@@ -60,7 +60,7 @@
                                 </constraints>
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="GCN-VH-YHS" userLabel="Photo album">
-                                <rect key="frame" x="0.0" y="262" width="414" height="600"/>
+                                <rect key="frame" x="0.0" y="262" width="414" height="551"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="hva-wG-Bst">
                                     <size key="itemSize" width="128" height="128"/>
@@ -102,8 +102,14 @@
                                 </connections>
                             </collectionView>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="Pko-Y2-7Em">
-                                <rect key="frame" x="188.5" y="543.5" width="37" height="37"/>
+                                <rect key="frame" x="188.5" y="519" width="37" height="37"/>
                             </activityIndicatorView>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No images" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rA2-Go-zRc">
+                                <rect key="frame" x="156.5" y="564.5" width="101.5" height="26.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="h4h-cU-657">
                                 <rect key="frame" x="0.0" y="813" width="414" height="49"/>
                                 <items>
@@ -123,14 +129,16 @@
                             <constraint firstItem="zQi-Gs-EzL" firstAttribute="top" secondItem="zGg-s1-Gpl" secondAttribute="top" id="4qd-Sy-zf2"/>
                             <constraint firstItem="zGg-s1-Gpl" firstAttribute="trailing" secondItem="zQi-Gs-EzL" secondAttribute="trailing" id="78x-rU-9DY"/>
                             <constraint firstItem="h4h-cU-657" firstAttribute="trailing" secondItem="zGg-s1-Gpl" secondAttribute="trailing" id="7u9-dT-DRj"/>
+                            <constraint firstItem="rA2-Go-zRc" firstAttribute="centerX" secondItem="GCN-VH-YHS" secondAttribute="centerX" id="OX1-BH-7IM"/>
                             <constraint firstItem="zGg-s1-Gpl" firstAttribute="bottom" secondItem="h4h-cU-657" secondAttribute="bottom" id="P4E-XA-rxe"/>
                             <constraint firstItem="Pko-Y2-7Em" firstAttribute="centerY" secondItem="GCN-VH-YHS" secondAttribute="centerY" id="Ry4-Qw-7JR"/>
                             <constraint firstItem="h4h-cU-657" firstAttribute="leading" secondItem="zGg-s1-Gpl" secondAttribute="leading" id="X4d-GY-KzG"/>
                             <constraint firstItem="zGg-s1-Gpl" firstAttribute="trailing" secondItem="GCN-VH-YHS" secondAttribute="trailing" id="aIm-zn-9O9"/>
-                            <constraint firstItem="zGg-s1-Gpl" firstAttribute="bottom" secondItem="GCN-VH-YHS" secondAttribute="bottom" id="f0h-hT-HGR"/>
+                            <constraint firstItem="h4h-cU-657" firstAttribute="top" secondItem="GCN-VH-YHS" secondAttribute="bottom" id="f0h-hT-HGR"/>
                             <constraint firstItem="Pko-Y2-7Em" firstAttribute="centerX" secondItem="GCN-VH-YHS" secondAttribute="centerX" id="fzQ-P2-H97"/>
                             <constraint firstItem="GCN-VH-YHS" firstAttribute="top" secondItem="zQi-Gs-EzL" secondAttribute="bottom" constant="10" id="juJ-qK-oM2"/>
                             <constraint firstItem="zQi-Gs-EzL" firstAttribute="leading" secondItem="zGg-s1-Gpl" secondAttribute="leading" id="nty-fu-Qjl"/>
+                            <constraint firstItem="rA2-Go-zRc" firstAttribute="centerY" secondItem="GCN-VH-YHS" secondAttribute="centerY" constant="40" id="r3I-N8-mju"/>
                             <constraint firstItem="GCN-VH-YHS" firstAttribute="leading" secondItem="zGg-s1-Gpl" secondAttribute="leading" id="ynb-cH-QlM"/>
                         </constraints>
                     </view>
@@ -138,13 +146,14 @@
                     <connections>
                         <outlet property="mapView" destination="zQi-Gs-EzL" id="w95-Eg-Knr"/>
                         <outlet property="newCollectionButton" destination="saX-uH-hvA" id="IAK-5H-LTs"/>
+                        <outlet property="noImagesLabel" destination="rA2-Go-zRc" id="lJE-SM-Mpl"/>
                         <outlet property="photoAlbum" destination="GCN-VH-YHS" id="7xY-V3-FSz"/>
                         <outlet property="spinner" destination="Pko-Y2-7Em" id="qe0-8l-gPC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mgP-c1-SFL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1084" y="98"/>
+            <point key="canvasLocation" x="1082.608695652174" y="97.767857142857139"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="4W5-c0-WWY">

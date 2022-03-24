@@ -83,6 +83,8 @@ class FlickrClient {
     }
     
     private class func setRandomPage(total: Int) {
-        Search.page = Int.random(in: 1..<total)
+        if total > 1 {
+            Search.page = Int.random(in: 1..<total)
+        }
     }
 }

@@ -18,6 +18,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBOutlet weak var photoAlbum: UICollectionView!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     @IBOutlet weak var newCollectionButton: UIBarButtonItem!
+    @IBOutlet weak var noImagesLabel: UILabel!
     
     // MARK: Variables
     
@@ -80,6 +81,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     fileprivate func loadFlickrPhotos() {
         spinner.startAnimating()
         disableNewCollectionButton()
+        hideNoImagesLabel()
         
         FlickrClient.search(pin: pin) { searchResponse, error in
             self.spinner.stopAnimating()
@@ -88,18 +90,22 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                 return
             }
             if let flickrPhotos = searchResponse?.photos.photo {
-                for flickrPhoto in flickrPhotos {
-                    let photo = Photo(context: DataController.shared.viewContext)
-                    photo.id = flickrPhoto.id
-                    photo.secret = flickrPhoto.secret
-                    photo.owner = flickrPhoto.owner
-                    photo.server = flickrPhoto.server
-                    photo.title = flickrPhoto.title
-                    photo.pin = self.pin
-                    
-                    self.pin.addToPhotos(photo)
-                    
-                    try? DataController.shared.viewContext.save()
+                if flickrPhotos.count > 0 {
+                    for flickrPhoto in flickrPhotos {
+                        let photo = Photo(context: DataController.shared.viewContext)
+                        photo.id = flickrPhoto.id
+                        photo.secret = flickrPhoto.secret
+                        photo.owner = flickrPhoto.owner
+                        photo.server = flickrPhoto.server
+                        photo.title = flickrPhoto.title
+                        photo.pin = self.pin
+                        
+                        self.pin.addToPhotos(photo)
+                        
+                        try? DataController.shared.viewContext.save()
+                    }
+                } else {
+                    self.showNoImagesLabel()
                 }
             }
             self.enableNewCollectionButton()
@@ -123,6 +129,14 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     fileprivate func disableNewCollectionButton() {
         newCollectionButton.isEnabled = false
+    }
+    
+    fileprivate func showNoImagesLabel() {
+        noImagesLabel.isHidden = false
+    }
+    
+    fileprivate func hideNoImagesLabel() {
+        noImagesLabel.isHidden = true
     }
     
     fileprivate func showErrorMessage(title: String, message: String) {
