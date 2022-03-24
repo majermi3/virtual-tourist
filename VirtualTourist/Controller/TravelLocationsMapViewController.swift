@@ -115,6 +115,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
         if let pin = view.annotation {
+            mapView.deselectAnnotation(pin, animated: false)
             goToPhotoAlbum(pin: pin as! Pin)
         }
     }
