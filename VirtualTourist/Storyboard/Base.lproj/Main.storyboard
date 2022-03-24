@@ -137,6 +137,7 @@
                     <navigationItem key="navigationItem" id="fhv-LT-cwq"/>
                     <connections>
                         <outlet property="mapView" destination="zQi-Gs-EzL" id="w95-Eg-Knr"/>
+                        <outlet property="newCollectionButton" destination="saX-uH-hvA" id="IAK-5H-LTs"/>
                         <outlet property="photoAlbum" destination="GCN-VH-YHS" id="7xY-V3-FSz"/>
                         <outlet property="spinner" destination="Pko-Y2-7Em" id="qe0-8l-gPC"/>
                     </connections>

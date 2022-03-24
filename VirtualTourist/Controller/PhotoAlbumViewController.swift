@@ -18,10 +18,12 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var photoAlbum: UICollectionView!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
+    @IBOutlet weak var newCollectionButton: UIBarButtonItem!
     
     // MARK: Variables
     
     var pin: Pin!
+    var numOfDownloadedImages = 0
     
     var fetchedResultsController: NSFetchedResultsController<Photo>!
     
@@ -79,12 +81,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     fileprivate func loadFlickrPhotos() {
         spinner.startAnimating()
+        disableNewCollectionButton()
         
         FlickrClient.search(pin: pin) { searchResponse, error in
             self.spinner.stopAnimating()
             if error != nil {
                 // TODO Show user-friendly error
-                print(error?.localizedDescription)
+                self.enableNewCollectionButton()
                 return
             }
             if let flickrPhotos = searchResponse?.photos.photo {
@@ -102,6 +105,14 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         }
     }
     
+    fileprivate func enableNewCollectionButton() {
+        newCollectionButton.isEnabled = true
+    }
+    
+    fileprivate func disableNewCollectionButton() {
+        newCollectionButton.isEnabled = false
+    }
+    
     // MARK: Actions
     
     @IBAction func loadNewCollection(_ sender: Any) {
@@ -110,10 +121,11 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         for photo in photos {
             DataController.shared.viewContext.delete(photo)
         }
+        try? DataController.shared.viewContext.save()
         loadFlickrPhotos()
     }
     
-    // MARK: Collection delegates
+    // MARK: Delegates
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return fetchedResultsController.sections?[section].numberOfObjects ?? 0
@@ -131,6 +143,11 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                 // TODO Show error message
             } else {
                 cell.photoView.image = UIImage(data: data!)
+            }
+            self.numOfDownloadedImages += 1
+            if self.numOfDownloadedImages == FlickrClient.Search.limit {
+                self.enableNewCollectionButton()
+                self.numOfDownloadedImages = 0
             }
         }
         

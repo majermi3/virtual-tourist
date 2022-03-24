@@ -13,6 +13,7 @@ class FlickrClient {
     
     struct Search {
         static var page = 1
+        static var limit = 20
     }
     
     enum Endpoints {
@@ -23,7 +24,7 @@ class FlickrClient {
         
         var stringValue: String {
             switch self {
-            case .search(let latitude, let longitude, let page): return Endpoints.base + "?method=flickr.photos.search&api_key=\(Auth.API_KEY)&lat=\(latitude)&lon=\(longitude)&page=\(page)&per_page=10&format=json&nojsoncallback=1"
+            case .search(let latitude, let longitude, let page): return Endpoints.base + "?method=flickr.photos.search&api_key=\(Auth.API_KEY)&lat=\(latitude)&lon=\(longitude)&page=\(page)&per_page=\(Search.limit)&format=json&nojsoncallback=1"
             case .photo(let photo): return "https://live.staticflickr.com/\(photo.server!)/\(photo.id!)_\(photo.secret!).jpg"
             }
         }
