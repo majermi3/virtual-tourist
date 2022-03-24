@@ -29,10 +29,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     // MARK: Lifecycle
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         let region = MKCoordinateRegion(

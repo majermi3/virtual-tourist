@@ -75,7 +75,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     }
     
     @objc func addPin(gesture: UILongPressGestureRecognizer) {
-        if gesture.state == .began {
+        if gesture.state != .began {
             return
         }
         
