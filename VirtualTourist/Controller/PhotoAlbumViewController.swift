@@ -10,8 +10,7 @@ import UIKit
 import MapKit
 import CoreData
 
-class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate {
-    
+class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
     // MARK: Outlets
     
@@ -44,6 +43,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         mapView.addAnnotation(pin)
         
         setupFetchedResultsController()
+        if pin.photos?.count == 0 {
+            loadFlickrPhotos()
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -70,10 +72,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         fetchedResultsController.delegate = self
         do {
             try fetchedResultsController.performFetch()
-            let count = fetchedResultsController.sections?[0].numberOfObjects
-            if count == nil || count == 0 {
-                loadFlickrPhotos()
-            }
         } catch {
             fatalError("The fetch could not be performed: \(error.localizedDescription)")
         }
@@ -86,8 +84,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         FlickrClient.search(pin: pin) { searchResponse, error in
             self.spinner.stopAnimating()
             if error != nil {
-                // TODO Show user-friendly error
-                self.enableNewCollectionButton()
+                self.showErrorMessage(title: "Cannot find pictures", message: error?.localizedDescription ?? "")
                 return
             }
             if let flickrPhotos = searchResponse?.photos.photo {
@@ -99,8 +96,23 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                     photo.server = flickrPhoto.server
                     photo.title = flickrPhoto.title
                     photo.pin = self.pin
+                    
+                    self.pin.addToPhotos(photo)
+                    
+                    try? DataController.shared.viewContext.save()
                 }
-                try? DataController.shared.viewContext.save()
+            }
+            self.enableNewCollectionButton()
+        }
+    }
+    
+    fileprivate func removePinPhotos() {
+        for photo in fetchedResultsController.fetchedObjects! {
+            DataController.shared.viewContext.delete(photo)
+            do {
+                try DataController.shared.viewContext.save()
+            } catch {
+                print(error)
             }
         }
     }
@@ -113,19 +125,24 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         newCollectionButton.isEnabled = false
     }
     
+    fileprivate func showErrorMessage(title: String, message: String) {
+        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alertVC, animated: true, completion: nil)
+    }
+    
     // MARK: Actions
     
     @IBAction func loadNewCollection(_ sender: Any) {
-        let photos = fetchedResultsController.sections?.first?.objects as! [Photo]
-        
-        for photo in photos {
-            DataController.shared.viewContext.delete(photo)
-        }
-        try? DataController.shared.viewContext.save()
+        removePinPhotos()
         loadFlickrPhotos()
     }
     
     // MARK: Delegates
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return fetchedResultsController.sections?.count ?? 1
+    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return fetchedResultsController.sections?[section].numberOfObjects ?? 0
@@ -134,21 +151,19 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoAlbumCell", for: indexPath) as! PhotoCollectionViewCell
         
-        cell.photoView.image = UIImage(systemName: "photo.artframe")
-        
         let currentPhoto = fetchedResultsController.object(at: indexPath)
-        
-        FlickrClient.loadPhoto(photo: currentPhoto) { data, error in
-            if error != nil || data == nil {
-                // TODO Show error message
-            } else {
-                cell.photoView.image = UIImage(data: data!)
+        if (currentPhoto.image == nil) {
+            cell.photoView.image = UIImage(systemName: "photo.artframe")
+            
+            FlickrClient.loadPhoto(photo: currentPhoto) { imageData, error in
+                guard error == nil else {
+                    return
+                }
+                currentPhoto.image = imageData
+                try? DataController.shared.viewContext.save()
             }
-            self.numOfDownloadedImages += 1
-            if self.numOfDownloadedImages == FlickrClient.Search.limit {
-                self.enableNewCollectionButton()
-                self.numOfDownloadedImages = 0
-            }
+        } else {
+            cell.photoView.image = UIImage(data: currentPhoto.image!)
         }
         
         return cell
@@ -157,10 +172,48 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let photoToDelete = fetchedResultsController.object(at: indexPath)
         DataController.shared.viewContext.delete(photoToDelete)
-        try? DataController.shared.viewContext.save()
+        do {
+            try DataController.shared.viewContext.save()
+        } catch {
+            print(error)
+        }
     }
+}
+
+
+extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
     
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        photoAlbum.reloadData()
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        switch type {
+        case .insert:
+            photoAlbum.insertItems(at: [newIndexPath!])
+            break
+        case .delete:
+            photoAlbum.deleteItems(at: [indexPath!])
+            break
+        case .update:
+            photoAlbum.reloadItems(at: [indexPath!])
+            break
+        case .move:
+            photoAlbum.moveItem(at: indexPath!, to: newIndexPath!)
+        default:
+            break
+        }
+    }
+
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+        
+        let indexSet = IndexSet(integer: sectionIndex)
+        
+        switch type {
+        case .insert:
+            photoAlbum.insertSections(indexSet)
+            break
+        case .delete:
+            photoAlbum.deleteSections(indexSet)
+            break
+        default:
+            break
+        }
     }
 }

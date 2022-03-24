@@ -38,6 +38,7 @@ class FlickrClient {
         let url = Endpoints.search(latitude: pin.latitude, longitude: pin.longitude, page: Search.page).url
         let request = URLRequest(url: url)
         
+        print(url.absoluteString)
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if error != nil {
                 DispatchQueue.main.async {
@@ -63,23 +64,7 @@ class FlickrClient {
     }
     
     class func loadPhoto(photo: Photo, completion: @escaping (Data?, Error?) -> Void) {
-        guard photo.server != nil, photo.id != nil, photo.secret != nil else {
-            //TODO Error message
-            return
-        }
-        
         let url = Endpoints.photo(photo: photo).url
-        
-        // Load image from cache
-        let fileCachePath = FileManager.default.temporaryDirectory.appendingPathComponent(
-            url.lastPathComponent,
-            isDirectory: false
-        )
-        if let data = try? Data(contentsOf: fileCachePath) {
-            completion(data, nil)
-            return
-        }
-        
         let task = URLSession.shared.downloadTask(with: url) { tempURL, response, error in
             guard error == nil, tempURL != nil else {
                 DispatchQueue.main.async {
@@ -88,23 +73,13 @@ class FlickrClient {
                 return
             }
             
-            cachePhoto(tempPath: tempURL!, path: fileCachePath)
-            
-            if let data = try? Data(contentsOf: fileCachePath) {
+            if let data = try? Data(contentsOf: tempURL!) {
                 DispatchQueue.main.async {
                     completion(data, nil)
                 }
             }
         }
         task.resume()
-    }
-    
-    private class func cachePhoto(tempPath: URL, path: URL) {
-        if FileManager.default.fileExists(atPath: path.path) {
-            try? FileManager.default.removeItem(at: path)
-        }
-        
-        try? FileManager.default.copyItem(at: tempPath, to: path)
     }
     
     private class func setRandomPage(total: Int) {
