@@ -35,7 +35,11 @@ class FlickrClient {
     }
     
     class func search(pin: Pin, completion: @escaping (SearchResponse?, Error?) -> Void) {
-        let url = Endpoints.search(latitude: pin.latitude, longitude: pin.longitude, page: Search.page).url
+        let url = Endpoints.search(
+            latitude: pin.latitude,
+            longitude: pin.longitude,
+            page: getRandomPage(total: Int(pin.totalPages))
+        ).url
         let request = URLRequest(url: url)
         
         print(url.absoluteString)
@@ -50,7 +54,11 @@ class FlickrClient {
             let decoder = JSONDecoder()
             do {
                 let searchResponse = try decoder.decode(SearchResponse.self, from: data!)
-                setRandomPage(total: searchResponse.photos.pages)
+                
+                // Set new totalPages number
+                pin.totalPages = Int16(searchResponse.photos.pages)
+                try? DataController.shared.viewContext.save()
+                
                 DispatchQueue.main.async {
                     completion(searchResponse, nil)
                 }
@@ -82,9 +90,10 @@ class FlickrClient {
         task.resume()
     }
     
-    private class func setRandomPage(total: Int) {
-        if total > 1 {
-            Search.page = Int.random(in: 1..<total)
+    private class func getRandomPage(total: Int?) -> Int {
+        if let total = total {
+            return total > 1 ? Int.random(in: 1..<total) : 1
         }
+        return 1
     }
 }
