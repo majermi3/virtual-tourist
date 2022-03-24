@@ -75,6 +75,10 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     }
     
     @objc func addPin(gesture: UILongPressGestureRecognizer) {
+        if gesture.state == .began {
+            return
+        }
+        
         let touchPoint = gesture.location(in: gesture.view)
         let coordinates = (gesture.view as? MKMapView)?.convert(touchPoint, toCoordinateFrom: gesture.view)
         
